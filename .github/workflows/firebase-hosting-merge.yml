@@ -9,23 +9,45 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     env:
-      # Force actions to use Node 20 to match your local build
+      # Allow Node 20 for actions (matches your local environment)
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      # 2️⃣ Setup Node.js (match local Node 20)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.19.0'
 
+      # 3️⃣ Install dependencies cleanly
       - name: Install dependencies
         run: npm ci
 
+      # 4️⃣ Optional: Install Angular CLI locally to avoid npx issues
+      - name: Install Angular CLI locally
+        run: npm install @angular/cli --save-dev
+
+      # 5️⃣ Build Angular project
       - name: Build Angular project
         run: npm run build -- --configuration production
 
+      # 6️⃣ Debug info (helpful if deploy fails)
+      - name: Debug environment
+        run: |
+          node -v
+          npm -v
+          npx ng version
+          ls -la
+
+      # 7️⃣ Optional: Install Firebase CLI globally for stability
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      # 8️⃣ Deploy to Firebase Hosting
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
