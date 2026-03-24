@@ -8,32 +8,23 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-
     env:
-      # Opt into Node.js 24 for all actions
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      # Force actions to use Node 20 to match your local build
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: '20.19.0'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build Angular project
         run: npm run build -- --configuration production
-
-      - name: Debug info (optional, helps if build fails)
-        run: |
-          node -v
-          npm -v
-          npx --version
-          ls -la
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
